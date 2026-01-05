@@ -364,7 +364,50 @@ async function run() {
         res.send(result)
     })
 
-    
+    //get buyer stats
+    app.get('/tasks/stats/buyer', verifyFirebaseToken, veryfyBuyer, async (req, res) => {
+        const email = req.query.email
+
+        if (email !== req.decoded_email) {
+            return res.status(403).send({ message: 'forbidden access' })
+        }
+
+        const taskCount = await taskCollection.countDocuments({ buyerEmail: email })
+
+        const pipeline = [
+            {
+                $match: { buyerEmail: email }
+            },
+            {
+                $group: {
+                    _id: null,
+                    pendingTask: { $sum: '$required_workers' }
+                }
+            }
+        ]
+        const pendingResult = await taskCollection.aggregate(pipeline).toArray()
+        const pendingTask = pendingResult[0]?.pendingTask || 0
+
+        const paymentPipeline = [
+            {
+                $match: { buyerEmail: email }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalPayment: { $sum: '$amount' }
+                }
+            }
+        ]
+        const paymentResult = await paymentCollection.aggregate(paymentPipeline).toArray()
+        const totalPayment = paymentResult[0]?.totalPayment || 0
+
+        res.send({
+            taskCount,
+            pendingTask,
+            totalPayment
+        })
+    })
 
 
     // submission related api
