@@ -445,7 +445,7 @@ async function run() {
         }
 
         const query = { workerEmail: email }
-        const skip = (page - 1) * limit
+        const skip = (page - 1) * limit 
 
         const cursor = submissionCollection.find(query).sort({ current_date: -1 }).skip(skip).limit(limit)
         const result = await cursor.toArray()
