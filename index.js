@@ -779,6 +779,7 @@ async function run() {
         res.send(result)
     })
 
+
     //delete notification
     app.delete('/notifications/:id', verifyFirebaseToken, async (req, res) => {
         const id = req.params.id
