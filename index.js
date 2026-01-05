@@ -356,13 +356,7 @@ async function run() {
         res.send(result)
     })
 
-    //delete task by admin
-    app.delete('/tasks/admin/:id', verifyFirebaseToken, veryfyAdmin, async (req, res) => {
-        const id = req.params.id
-        const query = { _id: new ObjectId(id) }
-        const result = await taskCollection.deleteOne(query)
-        res.send(result)
-    })
+    
 
     //get buyer stats
     app.get('/tasks/stats/buyer', verifyFirebaseToken, veryfyBuyer, async (req, res) => {
